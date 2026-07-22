@@ -1,4 +1,5 @@
 // backend/src/index.ts
+import { errorHandler } from './middleware/errorHandler';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -27,6 +28,9 @@ app.use('/api/tasks', taskRoutes);
 app.get('/', (req, res) => {
     res.send('Task Management API is running');
 });
+
+// Error handling middleware (last middleware)
+app.use(errorHandler);
 
 // Start Server
 app.listen(PORT, async () => {
