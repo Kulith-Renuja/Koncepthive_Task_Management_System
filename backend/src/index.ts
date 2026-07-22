@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import { pool } from './db';
 import authRoutes from './routes/auth';
+import taskRoutes from './routes/tasks';
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(cookieParser()); // Initialize cookie-parser
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/tasks', taskRoutes);
 
 app.get('/', (req, res) => {
     res.send('Task Management API is running');
