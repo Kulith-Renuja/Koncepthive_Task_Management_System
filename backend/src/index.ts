@@ -1,7 +1,10 @@
+// backend/src/index.ts
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 import { pool } from './db';
+import authRoutes from './routes/auth';
 
 dotenv.config();
 
@@ -9,10 +12,16 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173', // Must match your Vite frontend URL
+    credentials: true // Crucial for allowing cookies to be sent and received
+}));
 app.use(express.json());
+app.use(cookieParser()); // Initialize cookie-parser
 
-// Basic health check route
+// Routes
+app.use('/api/auth', authRoutes);
+
 app.get('/', (req, res) => {
     res.send('Task Management API is running');
 });
@@ -21,7 +30,6 @@ app.get('/', (req, res) => {
 app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
     try {
-        // Test the database connection on startup
         await pool.query('SELECT 1');
     } catch (error) {
         console.error('Database connection failed:', error);
