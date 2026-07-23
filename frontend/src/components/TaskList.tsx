@@ -2,7 +2,7 @@
 import React from 'react';
 import type { Task } from '../types/task';
 import { Spinner } from './Spinner';
-import { ChevronLeft, ChevronRight, Calendar, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, AlertCircle, Edit, Trash2 } from 'lucide-react';
 
 interface TaskListProps {
   tasks: Task[];
@@ -11,6 +11,8 @@ interface TaskListProps {
   totalTasks: number;
   limit: number;
   onPageChange: (newPage: number) => void;
+  onEdit: (task: Task) => void;
+  onDelete: (id: number) => void;
 }
 
 export const TaskList: React.FC<TaskListProps> = ({
@@ -20,6 +22,8 @@ export const TaskList: React.FC<TaskListProps> = ({
   totalTasks,
   limit,
   onPageChange,
+  onEdit,
+  onDelete,
 }) => {
   const totalPages = Math.ceil(totalTasks / limit) || 1;
 
@@ -77,6 +81,7 @@ export const TaskList: React.FC<TaskListProps> = ({
               <th className="px-3 py-3.5">Priority</th>
               <th className="px-3 py-3.5">Status</th>
               <th className="px-3 py-3.5">Due Date</th>
+              <th className="px-3 py-3.5 text-right pr-6">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-800 text-sm">
@@ -97,6 +102,24 @@ export const TaskList: React.FC<TaskListProps> = ({
                         {new Date(task.due_date).toLocaleDateString()}
                       </span>
                       {overdue && <span className="text-[10px] uppercase font-bold bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300 px-1.5 py-0.5 rounded">Overdue</span>}
+                    </div>
+                  </td>
+                  <td className="px-3 py-4 text-right pr-6">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => onEdit(task)}
+                        className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-blue-400"
+                        title="Edit Task"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => onDelete(task.id)}
+                        className="rounded-lg p-1.5 text-gray-500 hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/30 dark:hover:text-red-400"
+                        title="Delete Task"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -127,6 +150,20 @@ export const TaskList: React.FC<TaskListProps> = ({
                 </div>
                 {getStatusBadge(task.status)}
               </div>
+              <div className="flex justify-end gap-2 border-t border-gray-100 dark:border-gray-800 pt-2">
+                <button
+                  onClick={() => onEdit(task)}
+                  className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg dark:bg-blue-900/30 dark:text-blue-400"
+                >
+                  <Edit className="h-3.5 w-3.5" /> Edit
+                </button>
+                <button
+                  onClick={() => onDelete(task.id)}
+                  className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg dark:bg-red-900/30 dark:text-red-400"
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Delete
+                </button>
+              </div>
             </div>
           );
         })}
@@ -144,7 +181,6 @@ export const TaskList: React.FC<TaskListProps> = ({
             onClick={() => onPageChange(page - 1)}
             disabled={page === 1}
             className="inline-flex items-center rounded-lg border border-gray-300 bg-white p-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            aria-label="Previous Page"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -155,7 +191,6 @@ export const TaskList: React.FC<TaskListProps> = ({
             onClick={() => onPageChange(page + 1)}
             disabled={page === totalPages}
             className="inline-flex items-center rounded-lg border border-gray-300 bg-white p-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            aria-label="Next Page"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
