@@ -1,63 +1,134 @@
-# Task Management System (TaskHive)
+# TaskHive - Task Management System
 
-A full-stack, responsive Task Management System built with React, Node.js, Express, PostgreSQL, and TypeScript.
-
----
-
-## Features
-
-- **Authentication**: JWT-based login/logout with secure HTTP-only refresh tokens.
-- **Dashboard Metrics**: Live task summaries (Total, Pending, In Progress, Completed, Overdue).
-- **Task Management (CRUD)**: Create, view, update, and delete tasks.
-- **Search & Filters**: Search by title, filter by status and priority.
-- **Sorting & Pagination**: Sort by creation date or due date with paginated list views.
-- **Form Validation**: Strict schema validation with Zod on both client and server (Title required, Due date $\ge$ today, Priority required, Status required).
-- **Responsive UI & Dark Mode**: Mobile, tablet, and desktop viewports with dynamic dark theme support.
-- **Bonus Features**: Docker support, Unit testing with Jest, Toast notifications, Silent refresh tokens.
+A production-grade, full-stack, responsive Task Management application built with React (Vite), Node.js, Express, PostgreSQL, and TypeScript.
 
 ---
 
-## Tech Stack
+## Live Links & Deployment Summary
 
-- **Frontend**: React (Vite), TypeScript, Tailwind CSS v4, React Hook Form, Zod, Lucide Icons, React Hot Toast
-- **Backend**: Node.js, Express, TypeScript, PostgreSQL (`pg`), JWT, Zod, Jest
-- **Deployment**: Vercel (Frontend), Railway (Backend & PostgreSQL)
+- **Live Frontend App**: [https://koncepthive-task-management-system.vercel.app/](https://koncepthive-task-management-system.vercel.app/)
+- **Live Backend API**: [https://koncepthivetaskmanagementsystem-production.up.railway.app/](https://koncepthivetaskmanagementsystem-production.up.railway.app/)
+- **Frontend Hosting**: Vercel
+- **Backend & Database Hosting**: Railway (Managed Node.js + Managed PostgreSQL)
+
+---
+
+## Project Overview
+
+TaskHive is designed to manage daily tasks, workflows, and productivity. It features full CRUD capabilities, JWT-based authentication with HTTP-only silent refresh tokens, interactive dashboard metrics, searching, filtering, sorting, pagination, client/server Zod validation, and dark mode support.
+
+### Key Features
+- **Authentication**: JWT token authorization paired with HTTP-only cookies for silent refresh handling.
+- **Dashboard Overview**: Real-time metrics tracking Total, Pending, In Progress, Completed, and Overdue tasks.
+- **Task CRUD**: Create, read, update, and delete tasks seamlessly via modal dialogs.
+- **Search & Filters**: Instant search by task title, filtered by priority or status.
+- **Sorting & Pagination**: Responsive paginated table/card view sorted by creation date or due date.
+- **Data Validation**: Strict schema validation using Zod on both client and server layers.
+- **Theme Support**: Dark mode and light mode toggles using CSS custom variants.
+- **Containerization**: Included Docker Compose setup for local containerized development.
+
+---
+
+## Technology Stack
+
+- **Frontend**: React 18, Vite, TypeScript, Tailwind CSS v4, React Hook Form, Zod, Axios, Lucide Icons, React Hot Toast
+- **Backend**: Node.js, Express.js, TypeScript, PostgreSQL (`pg`), JSON Web Tokens (JWT), Zod, Jest, `ts-jest`
+- **Infrastructure / DevOps**: Docker, Docker Compose, Vercel, Railway
 
 ---
 
 ## Environment Variables
 
-### Backend (`backend/.env`)
+### Backend Environment Variables (`backend/.env`)
 ```env
 PORT=5000
-DATABASE_URL=postgresql://postgres:your_password@localhost:5432/task_management
+DATABASE_URL=postgresql://postgres:password@localhost:5432/task_management
 JWT_SECRET=super_secret_jwt_key
 JWT_REFRESH_SECRET=super_secret_refresh_key
 NODE_ENV=development
+FRONTEND_URL=http://localhost:5173
 
-Installation & Local Setup
-1. Database Setup
-Start a local PostgreSQL database or run the included Docker Compose configuration:
+### Frontend Environment Variables (frontend/.env)
+
+VITE_API_URL=http://localhost:5000/api
+Note: In production on Vercel, set VITE_API_URL to https://koncepthivetaskmanagementsystem-production.up.railway.app/api.
 
 Bash
+Database Setup
+
+The SQL DDL file defining table structures is located at database/schema.sql.
+Tables consist of users and tasks with foreign keys and default timestamps.
+To seed default assessment credentials (admin@test.com / 123456), run:
+
+cd backend
+npm run seed
+
+Installation & Local Execution Instructions
+
+Prerequisites
+
+Node.js (v18 or higher)
+PostgreSQL (or Docker Desktop)
+
+1. Database Setup (Docker Alternative)
+
 docker-compose up -d
+
 2. Backend Setup
-Bash
+
 cd backend
 npm install
-npm run seed  # Seeds admin@test.com / 123456
+npm run seed
 npm run dev
+The backend server starts on http://localhost:5000.
+
 3. Frontend Setup
-Bash
+
 cd frontend
 npm install
 npm run dev
-Default Credentials
-Email: admin@test.com
+The frontend app starts on http://localhost:5173.
 
-Password: 123456
+Running Backend Unit Tests
 
-Running Unit Tests
-Bash
+Unit tests covering validation logic and Zod error handling are implemented using Jest:
+
 cd backend
 npm run test
+
+API Documentation
+
+Authentication Endpoints
+Method,Endpoint,Description
+POST,/api/auth/login,Authenticate user & return short-lived access token + HTTP-only refresh cookie
+POST,/api/auth/refresh,Silently issue new access token using refresh cookie
+POST,/api/auth/logout,Clear HTTP-only authentication cookies
+
+Task Management Endpoints (Protected)
+
+Method,Endpoint,Description,Query Parameters
+GET,/api/tasks/stats,Fetch aggregate count of tasks by status & overdue,None
+GET,/api/tasks,Fetch paginated task list,"page, limit, search, status, priority, sortBy"
+GET,/api/tasks/:id,Fetch single task by ID,None
+POST,/api/tasks,Create a new task,Payload body
+PUT,/api/tasks/:id,Update an existing task,Payload body
+DELETE,/api/tasks/:id,Remove task by ID,None
+
+Assessment Default Credentials
+
+Email: admin@test.com
+Password: 123456
+
+Assumptions Made
+
+Authentication State Persistence: Access tokens are kept in-memory for security, while silent auto-refresh hooks maintain state across browser reloads via HTTP-only cookies.
+
+Overdue Task Logic: A task is considered overdue if its due_date is earlier than today's date and its status is not set to Completed.
+
+Database Schema Enforcement: Title is required, Due Date cannot be in the past at creation/update time, Priority must be one of ['Low', 'Medium', 'High'], and Status must be one of ['Pending', 'In Progress', 'Completed'].
+
+Known Limitations
+
+User Scope: The application currently targets a single-tenant or shared task workflow; task records are globally managed across authenticated users.
+
+Third-Party Cookies in Safari: Certain private browser modes block third-party cross-site HTTP-only cookies unless custom subdomains are configured across Vercel and Railway.
