@@ -54,7 +54,7 @@ VITE_API_URL=http://localhost:5000/api
 Note: In production on Vercel, set VITE_API_URL to https://koncepthivetaskmanagementsystem-production.up.railway.app/api.
 
 
-### Database Setup
+## Database Setup
 
 The SQL DDL file defining table structures is located at database/schema.sql.
 Tables consist of users and tasks with foreign keys and default timestamps.
@@ -63,18 +63,18 @@ To seed default assessment credentials (admin@test.com / 123456), run:
 cd backend
 npm run seed
 
-### Installation & Local Execution Instructions
+## Installation & Local Execution Instructions
 
 Prerequisites
 
 Node.js (v18 or higher)
 PostgreSQL (or Docker Desktop)
 
-1. Database Setup (Docker Alternative)
+### 1. Database Setup (Docker Alternative)
 
 docker-compose up -d
 
-2. Backend Setup
+### 2. Backend Setup
 
 cd backend
 npm install
@@ -82,23 +82,23 @@ npm run seed
 npm run dev
 The backend server starts on http://localhost:5000.
 
-3. Frontend Setup
+### 3. Frontend Setup
 
 cd frontend
 npm install
 npm run dev
 The frontend app starts on http://localhost:5173.
 
-### Running Backend Unit Tests
+## Running Backend Unit Tests
 
 Unit tests covering validation logic and Zod error handling are implemented using Jest:
 
 cd backend
 npm run test
 
-### API Documentation
+## API Documentation
 
-#### Authentication Endpoints
+### Authentication Endpoints
 
 POST /api/auth/login: Authenticates the user and returns a short-lived access token along with an HTTP-only refresh cookie.
 
@@ -106,7 +106,7 @@ POST /api/auth/refresh: Silently issues a new access token using the refresh coo
 
 POST /api/auth/logout: Clears the HTTP-only authentication cookies.
 
-#### Task Management Endpoints (Protected)
+### Task Management Endpoints (Protected)
 
 GET /api/tasks/stats: Fetches the aggregate count of tasks grouped by status and overdue state. (Query Parameters: None)
 
@@ -120,12 +120,12 @@ PUT /api/tasks/:id: Updates an existing task by its ID. (Requires payload body)
 
 DELETE /api/tasks/:id: Removes a task by its ID. (Query Parameters: None)
 
-### Assessment Default Credentials
+## Assessment Default Credentials
 
 Email: admin@test.com
 Password: 123456
 
-### Assumptions Made
+## Assumptions Made
 
 Authentication State Persistence: Access tokens are kept in-memory for security, while silent auto-refresh hooks maintain state across browser reloads via HTTP-only cookies.
 
@@ -133,7 +133,7 @@ Overdue Task Logic: A task is considered overdue if its due_date is earlier than
 
 Database Schema Enforcement: Title is required, Due Date cannot be in the past at creation/update time, Priority must be one of ['Low', 'Medium', 'High'], and Status must be one of ['Pending', 'In Progress', 'Completed'].
 
-### Known Limitations
+## Known Limitations
 
 User Scope: The application currently targets a single-tenant or shared task workflow; task records are globally managed across authenticated users.
 
