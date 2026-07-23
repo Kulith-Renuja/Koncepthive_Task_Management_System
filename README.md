@@ -39,8 +39,8 @@ TaskHive is designed to manage daily tasks, workflows, and productivity. It feat
 
 ## Environment Variables
 
-### Backend Environment Variables (`backend/.env`)
-```env
+#### Backend Environment Variables (`backend/.env`)
+env
 PORT=5000
 DATABASE_URL=postgresql://postgres:password@localhost:5432/task_management
 JWT_SECRET=super_secret_jwt_key
@@ -48,13 +48,13 @@ JWT_REFRESH_SECRET=super_secret_refresh_key
 NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
 
-### Frontend Environment Variables (frontend/.env)
+#### Frontend Environment Variables (frontend/.env)
 
 VITE_API_URL=http://localhost:5000/api
 Note: In production on Vercel, set VITE_API_URL to https://koncepthivetaskmanagementsystem-production.up.railway.app/api.
 
-Bash
-Database Setup
+
+### Database Setup
 
 The SQL DDL file defining table structures is located at database/schema.sql.
 Tables consist of users and tasks with foreign keys and default timestamps.
@@ -63,7 +63,7 @@ To seed default assessment credentials (admin@test.com / 123456), run:
 cd backend
 npm run seed
 
-Installation & Local Execution Instructions
+### Installation & Local Execution Instructions
 
 Prerequisites
 
@@ -89,37 +89,43 @@ npm install
 npm run dev
 The frontend app starts on http://localhost:5173.
 
-Running Backend Unit Tests
+### Running Backend Unit Tests
 
 Unit tests covering validation logic and Zod error handling are implemented using Jest:
 
 cd backend
 npm run test
 
-API Documentation
+### API Documentation
 
-Authentication Endpoints
-Method,Endpoint,Description
-POST,/api/auth/login,Authenticate user & return short-lived access token + HTTP-only refresh cookie
-POST,/api/auth/refresh,Silently issue new access token using refresh cookie
-POST,/api/auth/logout,Clear HTTP-only authentication cookies
+#### Authentication Endpoints
 
-Task Management Endpoints (Protected)
+POST /api/auth/login: Authenticates the user and returns a short-lived access token along with an HTTP-only refresh cookie.
 
-Method,Endpoint,Description,Query Parameters
-GET,/api/tasks/stats,Fetch aggregate count of tasks by status & overdue,None
-GET,/api/tasks,Fetch paginated task list,"page, limit, search, status, priority, sortBy"
-GET,/api/tasks/:id,Fetch single task by ID,None
-POST,/api/tasks,Create a new task,Payload body
-PUT,/api/tasks/:id,Update an existing task,Payload body
-DELETE,/api/tasks/:id,Remove task by ID,None
+POST /api/auth/refresh: Silently issues a new access token using the refresh cookie.
 
-Assessment Default Credentials
+POST /api/auth/logout: Clears the HTTP-only authentication cookies.
+
+#### Task Management Endpoints (Protected)
+
+GET /api/tasks/stats: Fetches the aggregate count of tasks grouped by status and overdue state. (Query Parameters: None)
+
+GET /api/tasks: Fetches a paginated list of tasks. (Query Parameters: page, limit, search, status, priority, sortBy)
+
+GET /api/tasks/:id: Fetches details for a single task by its ID. (Query Parameters: None)
+
+POST /api/tasks: Creates a new task. (Requires payload body)
+
+PUT /api/tasks/:id: Updates an existing task by its ID. (Requires payload body)
+
+DELETE /api/tasks/:id: Removes a task by its ID. (Query Parameters: None)
+
+### Assessment Default Credentials
 
 Email: admin@test.com
 Password: 123456
 
-Assumptions Made
+### Assumptions Made
 
 Authentication State Persistence: Access tokens are kept in-memory for security, while silent auto-refresh hooks maintain state across browser reloads via HTTP-only cookies.
 
@@ -127,7 +133,7 @@ Overdue Task Logic: A task is considered overdue if its due_date is earlier than
 
 Database Schema Enforcement: Title is required, Due Date cannot be in the past at creation/update time, Priority must be one of ['Low', 'Medium', 'High'], and Status must be one of ['Pending', 'In Progress', 'Completed'].
 
-Known Limitations
+### Known Limitations
 
 User Scope: The application currently targets a single-tenant or shared task workflow; task records are globally managed across authenticated users.
 
