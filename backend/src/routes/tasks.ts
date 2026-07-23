@@ -77,6 +77,29 @@ router.get('/', async (req: AuthRequest, res: Response): Promise<any> => {
     }
 });
 
+// GET /api/tasks/stats - Get dashboard task metrics
+router.get('/stats', async (req: AuthRequest, res: Response): Promise<any> => {
+  try {
+    const totalRes = await pool.query('SELECT COUNT(*) FROM tasks');
+    const pendingRes = await pool.query("SELECT COUNT(*) FROM tasks WHERE status = 'Pending'");
+    const inProgressRes = await pool.query("SELECT COUNT(*) FROM tasks WHERE status = 'In Progress'");
+    const completedRes = await pool.query("SELECT COUNT(*) FROM tasks WHERE status = 'Completed'");
+    // Overdue: Due date is in the past and task is not completed
+    const overdueRes = await pool.query("SELECT COUNT(*) FROM tasks WHERE due_date < CURRENT_DATE AND status != 'Completed'");
+
+    res.json({
+      total: parseInt(totalRes.rows[0].count),
+      pending: parseInt(pendingRes.rows[0].count),
+      inProgress: parseInt(inProgressRes.rows[0].count),
+      completed: parseInt(completedRes.rows[0].count),
+      overdue: parseInt(overdueRes.rows[0].count),
+    });
+  } catch (error) {
+    console.error('Error fetching stats:', error);
+    res.status(500).json({ message: 'Server error while fetching statistics' });
+  }
+});
+
 // GET /api/tasks/:id - Get a single task
 router.get('/:id', async (req: AuthRequest, res: Response): Promise<any> => {
     try {
